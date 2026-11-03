@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>TodoAssistant</RootNamespace>
+    <AssemblyName>TodoAssistant</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <StartupObject>TodoAssistant.Program</StartupObject>
+    <!-- 测试/预览构建可用 -p:HideExe=true 关掉单文件打包，以保证控制台诊断输出可见 -->
+    <SelfContained Condition="'$(HideExe)' != 'true'">true</SelfContained>
+    <PublishSingleFile Condition="'$(HideExe)' != 'true'">true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract Condition="'$(HideExe)' != 'true'">true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile Condition="'$(HideExe)' != 'true'">true</EnableCompressionInSingleFile>
+    <RuntimeIdentifier Condition="'$(HideExe)' != 'true'">win-x64</RuntimeIdentifier>
+    <DebugType Condition="'$(HideExe)' != 'true'">none</DebugType>
+    <ApplicationIcon>assets\app.ico</ApplicationIcon>
+    <Product>待办小助手</Product>
+    <AssemblyTitle>待办小助手</AssemblyTitle>
+    <Company>TodoAssistant</Company>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.4.1" />
+    <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="assets\app.ico" />
+  </ItemGroup>
+
+  <!-- 手机端网页资源：嵌入 exe，不落盘 -->
+  <ItemGroup>
+    <EmbeddedResource Include="Services\Web\index.html" LogicalName="web/index.html" />
+    <EmbeddedResource Include="Services\Web\app.js" LogicalName="web/app.js" />
+    <EmbeddedResource Include="Services\Web\style.css" LogicalName="web/style.css" />
+    <EmbeddedResource Include="Services\Web\manifest.webmanifest" LogicalName="web/manifest.webmanifest" />
+    <EmbeddedResource Include="Services\Web\sw.js" LogicalName="web/sw.js" />
+    <EmbeddedResource Include="Services\Web\assets\icon-192.png" LogicalName="web/icon-192.png" />
+    <EmbeddedResource Include="Services\Web\assets\icon-512.png" LogicalName="web/icon-512.png" />
+    <EmbeddedResource Include="Services\Web\assets\apple-touch-icon.png" LogicalName="web/apple-touch-icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="app.manifest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,110 @@
+<Window x:Class="TodoAssistant.Views.Dialogs.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="设置" Width="480" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Foreground="{DynamicResource TextBrush}" Background="{DynamicResource CardBrush}" FontFamily="{StaticResource UiFont}"
+        ShowInTaskbar="False" UseLayoutRounding="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="0" GlassFrameThickness="0" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
+
+    <StackPanel Margin="22,18,22,18">
+        <TextBlock Text="设置" FontSize="16" FontWeight="SemiBold" />
+
+        <TextBlock Text="外观" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,16,0,8" />
+        <Grid Margin="0,0,0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="主题" VerticalAlignment="Center" />
+            <ComboBox x:Name="ThemeCombo" Grid.Column="1" Width="180" Height="32" />
+        </Grid>
+
+        <TextBlock Text="DDL（截止时间）" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,16,0,8" />
+        <CheckBox x:Name="DdlDigestCheck" Content="每天定时汇总提醒所有 DDL" />
+        <Grid Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="汇总时间" VerticalAlignment="Center" />
+            <TextBox x:Name="DdlMorningBox" Grid.Column="1" Width="70" Height="30" VerticalContentAlignment="Center"
+                     FontFamily="Consolas" ToolTip="早上汇总时间，例如 09:00" />
+            <TextBlock Grid.Column="2" Text="和" VerticalAlignment="Center" Margin="8,0" />
+            <TextBox x:Name="DdlEveningBox" Grid.Column="3" Width="70" Height="30" VerticalContentAlignment="Center"
+                     FontFamily="Consolas" ToolTip="晚上汇总时间，例如 21:00" />
+        </Grid>
+        <Grid Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="汇总时提前提醒" VerticalAlignment="Center" />
+            <ComboBox x:Name="DdlDaysCombo" Grid.Column="1" Width="180" Height="32" />
+        </Grid>
+        <TextBlock Text="（今天到期和已过期的 DDL 无论多远都会提醒；每条 DDL 还能单独设置提前提醒）"
+                   FontSize="11" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,6,0,0" />
+
+        <TextBlock Text="提醒" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,16,0,8" />
+        <Grid Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="默认提前提醒" VerticalAlignment="Center" />
+            <ComboBox x:Name="LeadCombo" Grid.Column="1" Width="180" Height="32" />
+        </Grid>
+        <CheckBox x:Name="NotifyAtStartCheck" Content="到开始时间时再提醒一次" Margin="0,4,0,0" />
+        <CheckBox x:Name="ToastCheck" Content="使用 Windows 系统通知（右下角通知中心）" Margin="0,8,0,0" />
+        <CheckBox x:Name="BeepCheck" Content="响铃：提醒时播放系统铃声（会打断正在播放的音乐）" Margin="0,8,0,0" />
+        <CheckBox x:Name="SpeakCheck" Content="语音朗读待办内容（系统语音）" Margin="0,8,0,0" />
+        <Grid Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="响铃重复次数" VerticalAlignment="Center" />
+            <ComboBox x:Name="RepeatBeepCombo" Grid.Column="1" Width="120" Height="30">
+                <ComboBoxItem>1 次</ComboBoxItem>
+                <ComboBoxItem>2 次</ComboBoxItem>
+                <ComboBoxItem>3 次</ComboBoxItem>
+                <ComboBoxItem Tag="0">循环直到手动停止</ComboBoxItem>
+            </ComboBox>
+        </Grid>
+
+        <TextBlock Text="启动" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,18,0,8" />
+        <CheckBox x:Name="StartupCheck" Content="开机自动启动（登录后驻留系统托盘）" />
+        <CheckBox x:Name="ShowOnStartupCheck" Content="启动后直接打开主窗口" Margin="0,8,0,0" />
+        <CheckBox x:Name="HotkeyCheck" Content="全局快捷键 Ctrl + Alt + T 呼出窗口" Margin="0,8,0,0" />
+
+        <TextBlock Text="数据" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,18,0,8" />
+        <TextBlock Text="所有待办都保存在本机，不上传任何服务器：" FontSize="11.5" Foreground="{DynamicResource MutedBrush}" />
+        <Border Background="{DynamicResource WinBackgroundBrush}" CornerRadius="8" Padding="10,8" Margin="0,6,0,0">
+            <TextBlock x:Name="DataPathText" Text="" FontSize="11.5" FontFamily="Consolas, Microsoft YaHei UI"
+                       TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" />
+        </Border>
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+            <Button Style="{StaticResource GhostButton}" Content="打开数据文件夹" Click="OpenData_Click" Margin="0,0,8,0" />
+            <Button Style="{StaticResource GhostButton}" Content="备份数据" Click="Backup_Click" />
+        </StackPanel>
+
+        <TextBlock Text="关于" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,18,0,8" />
+        <TextBlock x:Name="AboutText" Text="" FontSize="11.5" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" LineHeight="18" />
+
+        <Grid Margin="0,18,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Style="{StaticResource GhostButton}" Content="测试提醒 + 铃声" Click="Test_Click" HorizontalAlignment="Left" />
+            <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="取消" Margin="0,0,8,0" Click="Cancel_Click" />
+            <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="保存" Click="Save_Click" IsDefault="True" />
+        </Grid>
+    </StackPanel>
+</Window>

@@ -1,0 +1,14 @@
+<Application x:Class="TodoAssistant.AppUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- 配色不在这里定义：由 ThemeManager.Apply() 在启动时写入每种颜色的画刷值，
+                 界面全部用 DynamicResource 引用，所以切换主题能实时生效 -->
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

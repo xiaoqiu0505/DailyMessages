@@ -1,0 +1,159 @@
+<Window x:Class="TodoAssistant.Views.Dialogs.TodoEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="clr-namespace:TodoAssistant.Controls"
+        Title="添加待办" Width="480" SizeToContent="Height" MaxHeight="760"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Foreground="{DynamicResource TextBrush}" Background="{DynamicResource CardBrush}" FontFamily="{StaticResource UiFont}"
+        ShowInTaskbar="False" UseLayoutRounding="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="0" GlassFrameThickness="0" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="22,16,22,16">
+        <!-- 标题 -->
+        <Grid MouseLeftButtonDown="Header_MouseLeftButtonDown">
+            <TextBlock x:Name="HeaderText" Text="添加待办" FontSize="16" FontWeight="SemiBold" />
+            <Button HorizontalAlignment="Right" Style="{StaticResource IconButton}" Click="Cancel_Click" Content="✕" />
+        </Grid>
+        <TextBlock x:Name="DayText" Text="" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,2,0,14" />
+
+        <!-- 日期 -->
+        <TextBlock Text="日期" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5" />
+        <ctl:DateDropDown x:Name="DatePicker" DateChanged="DatePicker_DateChanged" Margin="0,0,0,12" />
+
+        <!-- 内容 -->
+        <TextBlock Text="待办内容" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5" />
+        <TextBox x:Name="TitleBox" Height="38" FontSize="15" Padding="10,0"
+                 VerticalContentAlignment="Center"
+                 TextChanged="TitleBox_TextChanged" />
+        <TextBlock Text="备注（可选）" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,10,0,5" />
+        <TextBox x:Name="NotesBox" Height="36" Padding="10,0" VerticalContentAlignment="Center" />
+
+        <!-- 时间：滚轮选择 -->
+        <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="12"
+                Padding="12,8,12,6" Margin="0,14,0,0">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="开始时间" FontSize="12" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="结束时间（可选）" FontSize="12"
+                               Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" />
+                </Grid>
+
+                <Grid Margin="0,2,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ctl:WheelTimePicker x:Name="StartWheel" VerticalAlignment="Center"
+                                         ValueChanged="StartWheel_ValueChanged" />
+
+                    <Grid Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="→" FontSize="15" Foreground="{DynamicResource FaintBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <ctl:WheelTimePicker Grid.Column="2" x:Name="EndWheel" VerticalAlignment="Center"
+                                         AllowEmpty="True" IsEmpty="True" />
+                </Grid>
+
+                <!-- 快捷时间 -->
+                <WrapPanel Margin="0,4,0,0" HorizontalAlignment="Center">
+                    <Button Style="{StaticResource GhostButton}" Padding="8,3" FontSize="11.5" Margin="0,0,5,0"
+                            Tag="now" Click="QuickTime_Click" Content="现在" ToolTip="当前时间" />
+                    <Button Style="{StaticResource GhostButton}" Padding="8,3" FontSize="11.5" Margin="0,0,5,0"
+                            Tag="+30" Click="QuickTime_Click" Content="+30 分" />
+                    <Button Style="{StaticResource GhostButton}" Padding="8,3" FontSize="11.5" Margin="0,0,5,0"
+                            Tag="+60" Click="QuickTime_Click" Content="+1 小时" />
+                    <Button Style="{StaticResource GhostButton}" Padding="8,3" FontSize="11.5" Margin="0,0,5,0"
+                            Tag="+120" Click="QuickTime_Click" Content="+2 小时" />
+                    <Button Style="{StaticResource GhostButton}" Padding="8,3" FontSize="11.5" Margin="0,0,0,0"
+                            Tag="0900" Click="QuickTime_Click" Content="09:00" />
+                </WrapPanel>
+                <Button x:Name="ClearEndButton" Style="{StaticResource GhostButton}" Padding="8,3" FontSize="11.5"
+                        HorizontalAlignment="Center" Margin="0,6,0,0" Content="清除结束时间"
+                        Click="ClearEnd_Click" Visibility="Collapsed" />
+            </StackPanel>
+        </Border>
+
+        <!-- DDL -->
+        <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="12"
+                Padding="12,10,12,10" Margin="0,12,0,0">
+            <StackPanel>
+                <CheckBox x:Name="HasDeadlineCheck" Content="设置 DDL（截止时间）"
+                          Click="HasDeadline_Changed" />
+                <StackPanel x:Name="DeadlinePanel" Margin="0,10,0,0" Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="截止日期" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5" />
+                            <ctl:DateDropDown x:Name="DeadlineDatePicker" DateChanged="DeadlineDate_Changed" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="截止时间" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5" />
+                            <ctl:WheelTimePicker x:Name="DeadlineWheel" ValueChanged="DeadlineTime_Changed" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Text="DDL 单独提醒" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,10,0,5" />
+                    <ComboBox x:Name="DeadlineLeadCombo" Height="34" SelectionChanged="DeadlineLead_Changed" />
+                    <Border Background="{DynamicResource DdlBgBrush}" CornerRadius="8" Padding="10,6" Margin="0,8,0,0">
+                        <TextBlock x:Name="DeadlineHint" FontSize="11.5" Foreground="{DynamicResource DdlTextBrush}"
+                                   TextWrapping="Wrap" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 提醒 / 重复 -->
+        <Grid Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="提醒时机" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5" />
+                <ComboBox x:Name="LeadCombo" Height="34" />
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="重复" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5" />
+                <ComboBox x:Name="RepeatCombo" Height="34" />
+            </StackPanel>
+        </Grid>
+
+        <Border Background="{DynamicResource HintBgBrush}" CornerRadius="8" Padding="10,7" Margin="0,12,0,0">
+            <TextBlock x:Name="HintText" FontSize="11.5" Foreground="{DynamicResource HintTextBrush}" TextWrapping="Wrap" />
+        </Border>
+
+        <TextBlock x:Name="ErrorText" Foreground="{DynamicResource RedBrush}" FontSize="12" Margin="0,8,0,0"
+                   Visibility="Collapsed" TextWrapping="Wrap" />
+
+        <!-- 按钮 -->
+        <Grid Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="DeleteButton" Style="{StaticResource DangerButton}" Content="删除" Click="Delete_Click"
+                    Visibility="Collapsed" />
+            <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="取消" Margin="0,0,8,0" Click="Cancel_Click" />
+            <Button Grid.Column="3" Style="{StaticResource PrimaryButton}" Content="保存" Click="Save_Click" IsDefault="True"
+                    Padding="24,8" />
+        </Grid>
+    </StackPanel>
+    </ScrollViewer>
+</Window>

@@ -1,0 +1,290 @@
+<Window x:Class="TodoAssistant.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="待办小助手" Width="1440" Height="800" MinWidth="900" MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WinBackgroundBrush}"
+        Foreground="{DynamicResource TextBrush}"
+        FontFamily="{StaticResource UiFont}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Ideal">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <!-- 待办卡片 -->
+        <Style x:Key="TodoCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource LineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12,10,8,10" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <!-- 待办卡片模板（所有日期列共用一份） -->
+        <DataTemplate x:Key="TodoCardTemplate">
+            <Border MouseLeftButtonDown="Card_MouseLeftButtonDown" Tag="{Binding}">
+                <Border.Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource TodoCardStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSoon}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AmberBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource SoonBgBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPast}" Value="True">
+                                <Setter Property="BorderBrush" Value="#FCA5A5" />
+                                <Setter Property="Background" Value="{DynamicResource PastBgBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                <Setter Property="Opacity" Value="0.55" />
+                                <Setter Property="Background" Value="{DynamicResource DoneBgBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox IsChecked="{Binding IsDone, Mode=OneWay}" Tag="{Binding}"
+                              Click="DoneCheck_Click" Margin="0,1,10,0" VerticalAlignment="Top" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                                            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding Notes}" FontSize="11.5" Foreground="{DynamicResource MutedBrush}"
+                                   TextWrapping="Wrap" Margin="0,2,0,0"
+                                   Visibility="{Binding HasNotes, Converter={StaticResource BoolToVis}}" />
+                        <WrapPanel Margin="0,5,0,0">
+                            <Border Background="{DynamicResource ChipBgBrush}" CornerRadius="6" Padding="6,1" Margin="0,0,5,0">
+                                <TextBlock Text="{Binding TimeText}" FontSize="11"
+                                           Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" />
+                            </Border>
+                            <Border Background="{DynamicResource ChipBgBrush}" CornerRadius="6" Padding="6,1" Margin="0,0,5,0">
+                                <TextBlock Text="{Binding StatusText}" FontSize="10.5"
+                                           Foreground="{DynamicResource MutedBrush}" />
+                            </Border>
+                            <Border Background="{DynamicResource ChipWarnBgBrush}" CornerRadius="6" Padding="6,1" Margin="0,0,5,0"
+                                    Visibility="{Binding HasRepeat, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{Binding RepeatText}" FontSize="10.5" Foreground="{DynamicResource ChipWarnTextBrush}" />
+                            </Border>
+                            <!-- DDL 标签：有截止时间才显示，过期变红 -->
+                            <Border Background="{DynamicResource DdlBgBrush}" CornerRadius="6" Padding="6,1" Margin="0,0,5,0"
+                                    Visibility="{Binding HasDeadline, Converter={StaticResource BoolToVis}}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDeadlineOverdue}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource PastBgBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock FontSize="10.5" FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource DdlTextBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDeadlineOverdue}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource RedBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <Run Text="⏳ " />
+                                    <Run Text="{Binding DeadlineText, Mode=OneWay}" />
+                                </TextBlock>
+                            </Border>
+                        </WrapPanel>
+                    </StackPanel>
+                    <Button Grid.Column="2" Style="{StaticResource DeleteButton}" Width="24" Height="24"
+                            Tag="{Binding}" Click="DeleteItem_Click"
+                            ToolTip="删除这条待办" VerticalAlignment="Top">
+                        <!-- 用矢量图形画「删除」，不依赖 Segoe 图标字体（不同系统版本可能缺字形，会显示成方块） -->
+                        <Path Data="M 3,4 L 13,4 M 5,4 L 5.8,12.6 C 5.9,13.4 6.6,14 7.4,14 L 8.6,14
+                                     C 9.4,14 10.1,13.4 10.2,12.6 L 11,4 M 6,4 L 6.5,2.2 C 6.6,1.9 6.9,1.7 7.2,1.7
+                                     L 8.8,1.7 C 9.1,1.7 9.4,1.9 9.5,2.2 L 10,4"
+                              Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.35"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              StrokeLineJoin="Round" Width="16" Height="16" Stretch="Uniform" />
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <!-- 列头日期标签 -->
+        <Style x:Key="DayHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ============ 顶部：标题栏 + 工具栏 ============ -->
+        <Border Grid.Row="0" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1">
+            <Grid Margin="16,10,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- 图标 -->
+                <Border Width="28" Height="28" CornerRadius="8" Background="{DynamicResource AccentBrush}"
+                        VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Path Data="M 2,7 L 5.5,10.5 L 12,3" Stroke="White" StrokeThickness="2"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                          Width="14" Height="14" Stretch="Uniform"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                    <TextBlock Text="待办小助手" FontSize="15" FontWeight="SemiBold" />
+                    <TextBlock x:Name="SubtitleText" Text="今天起 5 天安排" FontSize="11.5"
+                               Foreground="{DynamicResource MutedBrush}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="QuickAddButton" Style="{StaticResource PrimaryButton}" Margin="0,0,6,0"
+                            Click="QuickAdd_Click" ToolTip="快速添加（Ctrl+N）">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="+" FontSize="15" FontWeight="Bold" Margin="0,0,6,0"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="添加待办" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Click="OpenBigCalendar_Click" ToolTip="打开大日历 / DDL 总览">
+                        <TextBlock Text="📅" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Click="Settings_Click" ToolTip="设置">
+                        <TextBlock Text="⚙" FontSize="15" />
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Click="Phone_Click" ToolTip="手机同步 / 推送设置">
+                        <TextBlock Text="📱" FontSize="14" />
+                    </Button>
+                    <Border Width="1" Background="{DynamicResource LineBrush}" Margin="6,6" />
+                    <Button Style="{StaticResource IconButton}" Click="Minimize_Click" ToolTip="最小化到托盘">
+                        <Path Data="M 2,8 L 14,8" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.8"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" Width="16" Height="16" />
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Click="Maximize_Click" ToolTip="最大化 / 还原">
+                        <Path x:Name="MaximizeIcon" Data="M 2.5,2.5 L 13.5,2.5 L 13.5,13.5 L 2.5,13.5 Z"
+                              Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.6"
+                              StrokeLineJoin="Round" Width="13" Height="13" />
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Click="Close_Click" ToolTip="关闭（仍在托盘运行）">
+                        <Path Data="M 3,3 L 13,13 M 13,3 L 3,13" Stroke="{DynamicResource MutedBrush}"
+                              StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              Width="14" Height="14" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ============ 今日概览条 ============ -->
+        <Border Grid.Row="1" Margin="16,12,16,4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="ClockText" Text="--:--:--" FontSize="26" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBrush}" FontFamily="Consolas, Microsoft YaHei UI"
+                               VerticalAlignment="Center" />
+                    <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="TodayStatText" Text="今天 0 项待办" FontSize="13" />
+                        <TextBlock x:Name="NextReminderText" Text="暂无提醒" FontSize="11.5"
+                                   Foreground="{DynamicResource MutedBrush}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- DDL 摘要：点开看全部 -->
+                    <Border x:Name="DdlSummaryBorder" CornerRadius="14" Padding="10,5" Margin="0,0,8,0"
+                            Background="{DynamicResource DdlBgBrush}" Cursor="Hand"
+                            ToolTip="查看全部 DDL" MouseLeftButtonUp="ShowDdl_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⏳" FontSize="11.5" VerticalAlignment="Center" Margin="0,0,5,0" />
+                            <TextBlock x:Name="DdlSummaryText" Text="无 DDL" FontSize="11.5"
+                                       Foreground="{DynamicResource DdlTextBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <Border x:Name="PhoneStatusBorder" CornerRadius="14" Background="{DynamicResource AccentSoftBrush}" Padding="10,5" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse x:Name="PhoneDot" Width="7" Height="7" Fill="{DynamicResource GreenBrush}"
+                                     VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock x:Name="PhoneStatusText" Text="手机同步已开启" FontSize="11.5"
+                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <Button x:Name="ThemeButton" Style="{StaticResource IconButton}" Click="ToggleTheme_Click"
+                            ToolTip="切换深色 / 浅色模式">
+                        <TextBlock x:Name="ThemeIcon" Text="🌙" FontSize="14" />
+                    </Button>
+                    <Button Style="{StaticResource GhostButton}" Click="TestAlert_Click" ToolTip="立即测试通知 + 铃声">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔔" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center" />
+                            <TextBlock Text="测试提醒" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ============ 待办列（天数可配置，由代码动态生成） ============ -->
+        <!-- 注意：左右留白放在内层 Grid 的 Margin 上，不要用 ScrollViewer 的 Padding，
+             否则 5 列内容比可视区宽出留白宽度，就会凭空出现横向滚动条 -->
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled"
+                      Margin="0,4,0,0" PanningMode="HorizontalOnly">
+            <Grid x:Name="DayColumnsHost" Margin="16,0,16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- ============ 状态栏 ============ -->
+        <Border Grid.Row="3" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="16,7">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="FooterHint" Text="左键托盘图标打开本窗口 · Ctrl+Alt+T 随时呼出 · 到点前 30 分钟提醒"
+                               FontSize="11.5" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource IconButton}" Click="OpenDataFolder_Click" ToolTip="打开数据文件夹">
+                        <TextBlock Text="📁" FontSize="13" />
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Click="OpenPhonePage_Click" ToolTip="在浏览器中打开手机版网页">
+                        <TextBlock Text="🌐" FontSize="13" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

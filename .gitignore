@@ -1,0 +1,27 @@
+# 构建产物
+bin/
+obj/
+publish_new/
+*.user
+*.suo
+.vs/
+
+# 发布产物（exe 体积 68MB，不适合进仓库；用 构建.ps1 自行生成）
+release/*.exe
+
+# 开发调试时的临时数据与截图
+testdata/
+verifydata/
+verifydata2/
+phonetest/
+ddltest/
+wtest*/
+wshot*/
+ui_shots/
+verify_shots/
+*.tmp
+snap_out.txt
+snap_err.txt
+
+# 本地日志
+*.log

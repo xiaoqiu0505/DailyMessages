@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#3b82f6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="待办">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css?v=3">
+<title>待办小助手</title>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="title-wrap">
+      <div class="title">待办小助手</div>
+      <div class="sub" id="today-summary">今天 0 项待办</div>
+    </div>
+    <div class="sync" id="sync">已连接</div>
+  </header>
+
+  <div class="tabs" id="day-tabs">
+    <button class="tab active" data-tab="0"><span class="tab-name">今天</span><span class="tab-date"></span><span class="badge" hidden></span></button>
+    <button class="tab" data-tab="1"><span class="tab-name">明天</span><span class="tab-date"></span><span class="badge" hidden></span></button>
+    <button class="tab" data-tab="2"><span class="tab-name">后天</span><span class="tab-date"></span><span class="badge" hidden></span></button>
+    <button class="tab" data-tab="3"><span class="tab-name">大后天</span><span class="tab-date"></span><span class="badge" hidden></span></button>
+    <button class="tab" data-tab="4"><span class="tab-name">5 天后</span><span class="tab-date"></span><span class="badge" hidden></span></button>
+  </div>
+
+  <!-- 视图切换：列表 / 时间表 -->
+  <div class="viewswitch" id="view-switch">
+    <button type="button" class="vs-btn active" data-view="list">📋 列表</button>
+    <button type="button" class="vs-btn" data-view="schedule">🗓 时间表</button>
+  </div>
+
+  <main id="list" class="list"></main>
+  <div id="schedule" class="schedule" hidden></div>
+
+  <div class="tip" id="tip">
+    <strong>装到手机主屏幕：</strong>浏览器菜单 →「添加到主屏幕」/「安装应用」，之后像 App 一样打开
+  </div>
+</div>
+
+<button class="fab" id="fab" aria-label="新增待办">+</button>
+
+<div class="sheet-mask" id="mask"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <h2>新增待办</h2>
+  <div class="seg" id="date-seg">
+    <button data-date="today" class="on">今天</button>
+    <button data-date="tomorrow">明天</button>
+    <button data-date="dayafter">后天</button>
+    <button data-date="day4">大后天</button>
+    <button data-date="day5">5 天后</button>
+    <button data-date="custom">其他</button>
+  </div>
+  <input type="date" id="f-date" class="custom-date" hidden>
+  <label class="field"><span>内容</span><input id="f-title" placeholder="例如：开会 / 背单词 / 取快递" maxlength="100"></label>
+  <div class="row">
+    <label class="field"><span>开始</span><input id="f-start" type="time"></label>
+    <label class="field"><span>结束</span><input id="f-end" type="time"></label>
+  </div>
+  <label class="field"><span>备注</span><input id="f-notes" placeholder="可选" maxlength="200"></label>
+  <div class="row">
+    <label class="field"><span>提前提醒</span>
+      <select id="f-lead">
+        <option value="5">5 分钟</option>
+        <option value="10">10 分钟</option>
+        <option value="15">15 分钟</option>
+        <option value="30" selected>30 分钟</option>
+        <option value="60">1 小时</option>
+        <option value="120">2 小时</option>
+      </select>
+    </label>
+    <label class="field"><span>重复</span>
+      <select id="f-repeat">
+        <option value="">不重复</option>
+        <option value="Daily">每天</option>
+        <option value="Weekday">工作日</option>
+        <option value="Weekly">每周</option>
+        <option value="Monthly">每月</option>
+      </select>
+    </label>
+  </div>
+  <div class="sheet-actions">
+    <button class="ghost" id="cancel">取消</button>
+    <button class="primary" id="save">保存</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/app.js?v=3"></script>
+</body>
+</html>
